@@ -1,0 +1,11 @@
+{
+  "name": "urhomatti",
+  "version": "1.0.0",
+  "author": "Niklas <niklas@narhinen.net>",
+  "dependencies": {
+    "coffee-script": "*",
+    "jquery": "*",
+    "express": "*",
+    "request": "*"
+  }
+}
