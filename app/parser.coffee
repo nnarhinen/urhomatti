@@ -1,15 +1,24 @@
 request = require 'request'
 jquery = require 'jquery'
 
-exports.parseSongList = (title, callback) ->
+requestArticle = (title, callback) ->
   request({url: "http://wiki.digit.fi/#{encodeURIComponent(title)}"}, (err, res, body) ->
     error = err
     if !error && res.statusCode != 200
       error = res.statusCode
     if error
       callback(error, null)
+      return
 
     article = jquery(body)
+    callback(false, article)
+  )
+
+exports.parseSongList = (title, callback) ->
+  requestArticle title, (error, article) ->
+    if error
+      callback(error, null)
+      return
     ret = {}
     ret.title = article.find("#firstHeading").text()
     ret.songs = []
@@ -28,4 +37,14 @@ exports.parseSongList = (title, callback) ->
         songNumber: songNumber
         category: categoryNode.text()
     callback(false, ret)
-  )
+
+exports.parseSong = (title, callback) ->
+  requestArticle title, (error, article) ->
+    if error
+      callback(error, null)
+      return
+    ret = {}
+    ret.title = article.find("#firstHeading").text()
+    ret.lyrics = article.find('div.lyrics').text()
+    callback(false, ret)
+ 
