@@ -1,7 +1,7 @@
 express = require 'express'
 
 halify = (song) ->
-  song.links =
+  song._links =
     self:
       href: "/songs/#{song.title}"
   return song
@@ -26,12 +26,22 @@ exports.start = () ->
 
   app = express()
 
+  app.use(express.static("#{__dirname}/../public"))
+
   app.get '/', (req, res) ->
     ret= {}
     ret.message = "Hello, Urho Matti"
     ret._embedded =
       songs: songs
+    ret._links =
+      self:
+        href: "/"
     res.send ret
-    
+  app.get '/songs/:song', (req, res) ->
+    song = (songs.filter (s) -> s.title == req.params['song'])[0]
+    if song
+      res.send song
+    else
+      res.send 404
 
   app.listen(process.env.PORT || 5000)
