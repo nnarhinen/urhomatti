@@ -1,5 +1,8 @@
 express = require 'express'
 cradle = require 'cradle'
+
+console.log "Cradle connecting to #{process.env.CLOUDANT_URL}"
+
 con = new (cradle.Connection)(process.env.CLOUDANT_URL || "http://127.0.0.1:5984")
 db = con.database 'urhomatti'
 
