@@ -3,7 +3,26 @@ cradle = require 'cradle'
 
 console.log "Cradle connecting to #{process.env.CLOUDANT_URL}"
 
-con = new (cradle.Connection)(process.env.CLOUDANT_URL || "http://127.0.0.1:5984")
+processCradleUrl = (url) ->
+  parsed = require('url').parse url
+  port = if parsed.protocol == 'https:' then 443 else parsed.port
+  auth = parsed.auth.split(':')
+  ret =
+    port: port
+    secure: port == 443
+  if auth.length == 2
+    ret.auth =
+      username: auth[0]
+      password: auth[1]
+  return ret
+
+
+cradleUrl = process.env.CLOUDANT_URL || "http://127.0.0.1:5984"
+cradleOptions = processCradleUrl(cradleUrl)
+
+console.log "Cradle url processed:", cradleOptions
+
+con = new (cradle.Connection) cradleUrl, cradleOptions.port, cradleOptions
 db = con.database 'urhomatti'
 
 halify = (song) ->
